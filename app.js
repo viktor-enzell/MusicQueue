@@ -16,7 +16,7 @@ var path = require('path');
 
 var client_id = 'Your client id'; // Your client id
 var client_secret = 'Your secret'; // Your secret
-var redirect_uri = 'Your redirect uri'; // Your redirect uri
+var redirect_uri = 'Your redirect URI'; // Your redirect uri
 
 /**
  * Generates a random string containing numbers and letters

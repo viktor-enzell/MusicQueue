@@ -63,3 +63,9 @@ typings/
 # IntelliJ
 .DS_Store
 .idea
+
+# Node modules
+node_modules/
+
+# App.js server for now due to private keys
+app.js
