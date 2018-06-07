@@ -1,8 +1,8 @@
 /* Space out content a bit */
 body {
-    padding-top: 20%;
+    padding-top: 10%;
     padding-bottom: 1.5rem;
-    background-color: #284b63;
+    background-color: #26A96C;
 }
 
 a {
@@ -14,6 +14,10 @@ a:hover {
     text-decoration: none;
 }
 
+h3 {
+    color: #F4F9E9;
+}
+
 #bg {
     position: fixed;
     top: 0;
@@ -22,8 +26,15 @@ a:hover {
     height: 100%;
 }
 
-.text-right {
-    color: #F4F9E9;
+.btn {
+    background-color: #256B51;
+    border-color: #256B51;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #2E8665;
+    border-color: #2E8665;
 }
 
 /* Everything but the jumbotron gets side spacing for mobile first views */
@@ -80,6 +91,17 @@ a:hover {
 }
 .marketing p + h4 {
     margin-top: 1.5rem;
+}
+
+/*#login, #loggedin {
+    display: none;
+}*/
+
+.text-overflow {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 500px;
 }
 
 /* Responsive: Portrait tablets and up */

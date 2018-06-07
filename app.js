@@ -8,15 +8,14 @@
  */
 
 var express = require('express'); // Express web server framework
+var app = express();
+
 var request = require('request'); // "Request" library
 var cors = require('cors');
 var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
 var path = require('path');
 
-var client_id = 'Your client id'; // Your client id
-var client_secret = 'Your secret'; // Your secret
-var redirect_uri = 'Your redirect uri'; // Your redirect uri
 
 /**
  * Generates a random string containing numbers and letters
@@ -35,15 +34,12 @@ var generateRandomString = function (length) {
 
 var stateKey = 'spotify_auth_state';
 
-var app = express();
-
 app.use(express.static(__dirname + '/public'))
     .use(cors())
     .use(cookieParser());
 
-app.get('/queue', function (req, res) {
-    res.sendFile(path.join(__dirname, 'public/queue.html'));
-});
+// Serve vue from node_modules as vue/
+app.use('/vue', express.static(path.join(__dirname, '/node_modules/vue/dist/')));
 
 app.get('/login', function (req, res) {
 
@@ -148,5 +144,12 @@ app.get('/refresh_token', function (req, res) {
     });
 });
 
-console.log('Listening on 8888');
-app.listen(8888);
+var server = app.listen(8888);
+var io = require('socket.io').listen(server);
+
+io.sockets.on('connection', function (socket) {
+
+    socket.on('queueTrack', function (track) {
+        io.emit('queueTrack', track);
+    })
+});
