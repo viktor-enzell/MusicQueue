@@ -32,9 +32,15 @@ h3 {
     color: white;
 }
 
-.btn-primary:hover {
+.btn:hover {
     background-color: #2E8665;
     border-color: #2E8665;
+}
+
+.btn:active {
+    background-color: #2E8665;
+    border-color: #2E8665;
+    box-shadow: none;
 }
 
 /* Everything but the jumbotron gets side spacing for mobile first views */
@@ -123,4 +129,8 @@ h3 {
     .jumbotron {
         border-bottom: 0;
     }
+}
+
+.albumCoverSearch {
+    height: 40px;
 }

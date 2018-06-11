@@ -9,14 +9,19 @@ var vm = new Vue({
         refresh_token: '',
         error: '',
         login: true,
+        showQueue: true,
+        showUserInfo: false,
+        playing: false,
 
         responses: {},
         name: '',
         email: '',
 
+        currentSong: '',
         searchInput: '',
+        oldSearchInput: '',
         searchResult: [],
-        queue: {}
+        queue: []
     },
     created: function () {
         this.params = this.getParams();
@@ -72,21 +77,54 @@ var vm = new Vue({
                 vm.displayNewToken();
             });
         },
-        search: function (query) {
+        play: function () {
             $.ajax({
-                url: 'https://api.spotify.com/v1/search',
+                url: 'https://api.spotify.com/v1/me/player/play',
                 headers: {
                     'Authorization': 'Bearer ' + this.access_token
                 },
-                data: {
-                    q: query,
-                    type: 'track'
-                },
                 success: function (response) {
-                    Vue.set(vm.responses, 'search', response);
-                    vm.displaySearch();
+                    console.log(response);
                 }
             });
+            this.playing = true;
+        },
+        pause: function () {
+            $.ajax({
+                url: 'https://api.spotify.com/v1/me/player/pause',
+                headers: {
+                    'Authorization': 'Bearer ' + this.access_token
+                },
+                success: function (response) {
+                    console.log(response);
+                }
+            });
+            this.playing = false;
+        },
+        search: function (query) {
+                $.ajax({
+                    url: 'https://api.spotify.com/v1/search',
+                    headers: {
+                        'Authorization': 'Bearer ' + this.access_token
+                    },
+                    data: {
+                        q: query,
+                        type: 'track'
+                    },
+                    success: function (response) {
+                        Vue.set(vm.responses, 'search', response);
+                        vm.displaySearch();
+                    }
+                });
+        },
+        queueSong: function (song) {
+            if (this.queue.length === 0 && this.currentSong === '') {
+                this.currentSong = song;
+            } else {
+                this.queue.push(song);
+            }
+            this.searchInput = "";
+            this.showQueue = true;
         },
         displayUser: function () {
             this.name = this.responses.user.display_name;
@@ -96,16 +134,19 @@ var vm = new Vue({
             this.refresh_token = this.responses.refreshToken;
         },
         displaySearch: function () {
+            this.showQueue = false;
             var i;
             var len = this.responses.search.tracks.total;
-            for (i = 0; i < len; i++) {
-                this.searchResult[i] = {
-                    track: this.responses.search.tracks.items[i].name,
-                    artist: this.responses.search.tracks.items[i].artists.join(", "),
-                    cover: this.responses.search.tracks.items[i].album.images[0].url
+            if (this.responses.search) {
+                for (i = 0; i < len; i++) {
+                    this.searchResult[i] = {
+                        track: this.responses.search.tracks.items[i].name,
+                        artist: this.responses.search.tracks.items[i].artists[0].name,
+                        cover: this.responses.search.tracks.items[i].album.images[0].url
+                    }
                 }
             }
-            console.log(this.searchResult);
-        }
+            this.oldSearchInput = this.searchInput;
+        },
     }
 });
