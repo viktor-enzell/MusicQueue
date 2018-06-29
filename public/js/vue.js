@@ -220,7 +220,6 @@ var vm = new Vue({
         },
         finished: function () {
             //if (this.responses.player.progress_ms >= this.responses.player.item.)
-            console.log(this.responses.player);
         },
         isPlaying: function () {
             return this.responses.player.is_playing;
