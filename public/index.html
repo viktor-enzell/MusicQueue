@@ -13,90 +13,108 @@
 </head>
 
 <body>
-<div class="container">
-    <div id="login" v-show="login">
-        <div class="row" id="content">
-            <div class="col">
-                <h2 class="text-center">Music Queue</h2>
-                <div class="row">
-                    <div class="col text-center">
-                        <h3>Start a party</h3>
-                        <a href="/login" class="btn btn-primary" v-on:click="authenticate">Log in with Spotify</a>
-                    </div>
-                    <div class="col text-center">
-                        <h3>Join an existing party</h3>
-                        <input type="text" class="form-control" placeholder="Enter a code: XXXX" aria-label="Music code">
+<div class="background" v-bind:style="{ 'background-image': 'url(' + backgroundImage + ')' }">
+    <div class="transparent">
+        <div class="container">
+            <div id="login" v-show="login && !contribute">
+                <div class="row" id="content">
+                    <div class="col">
+                        <h1 class="text-center">Music Queue</h1>
+                        <div class="row">
+                            <div class="col text-center">
+                                <img src="img/2bw.jpg" id="bgRight">
+                                <h2>Start a party</h2>
+                                <a href="/login" class="btn btn-outline-dark" v-on:click="authenticate">Log in with
+                                    Spotify</a>
+                            </div>
+                            <div class="col text-center">
+                                <img src="img/1bw.jpg" id="bgLeft">
+                                <h2>Join an existing party</h2>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Enter a code: XXXX"
+                                           aria-label="Music code">
+                                    <span class="input-group-btn">
+                                <button class="btn btn-outline-dark" v-on:click="join" type="button">Go!</button>
+                            </span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <div id="loggedin" v-show="!login">
-        <button class="btn btn-sm" v-on:click="showUserInfo = !showUserInfo">Account info</button>
-        <div v-show="showUserInfo">
-            <div id="user-profile" class="row">
-                <div class="col">
-                    <h1>Logged in as {{ name }}</h1>
-                    <h3>Email: {{ email }}</h3>
-                </div>
-            </div>
-            <div id="oauth" class="row">
-                <div class="col">
-                    <h3 class="text-overflow">Access token: {{ access_token }}</h3>
-                    <h3 class="text-overflow">Refresh token: {{ refresh_token }}</h3>
-                    <button class="btn btn-primary" id="obtain-new-token" v-on:click="newToken">Obtain new token using the refresh token</button>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <h3 class="text-center">Music Queue: XXXX</h3>
-                <div v-show="currentSong !== ''">
-                    <div class="row">
-                        <div class="col-1">
-                            <img class="albumCoverSearch" v-bind:src="currentSong.cover" />
-                        </div>
-                        <div class="col-9 float-right">
-                            Track: {{ currentSong.track }} <br>
-                            Artist: {{ currentSong.artist }}
-                        </div>
-                        <div class="col text-right">
-                            <button v-if="playing" class="btn btn-sm" id="pause" v-on:click="pause">Pause</button>
-                            <button v-else class="btn btn-sm" id="play" v-on:click="play">Play</button>
-                        </div>
-                    </div>
-                    <hr>
-                </div>
-                <input v-model="searchInput" v-bind:onchange="search(searchInput)" type="text" class="form-control" placeholder="Search for music to queue" aria-label="Music search">
-                <div v-show="!showQueue" v-for="result in searchResult">
-                    <hr>
-                    <div class="row">
-                        <div class="col-1">
-                            <img class="albumCoverSearch" v-bind:src="result.cover" />
-                        </div>
-                        <div class="col-10">
-                            Track: {{ result.track }} <br>
-                            Artist: {{ result.artist }}
-                        </div>
-                        <div class="col-1">
-                            <button class="btn btn-sm float-right" id="add" v-on:click="queueSong(result)">Add to queue</button>
+            <div id="contribute" v-show="login && contribute">
+                <div class="row">
+                    <div class="col">
+                        <h1 class="text-center">Music Queue: XXXX</h1>
+                        <div v-show="showQueue" v-for="song in queue">
+                            <hr>
+                            <div class="row">
+                                <div class="col-1">
+                                    <img class="albumCoverSearch" v-bind:src="song.cover"/>
+                                </div>
+                                <div class="col-9 float-right">
+                                    Track: {{ song.track }} <br>
+                                    Artist: {{ song.artist }}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div v-show="showQueue" v-for="song in queue">
-                    <hr>
-                    <div class="row">
-                        <div class="col-1">
-                            <img class="albumCoverSearch" v-bind:src="song.cover" />
+            </div>
+
+            <div id="loggedin" v-show="!login">
+                <div class="row">
+                    <div class="col">
+                        <h1 class="text-center">Music Queue: XXXX</h1>
+                        <div v-if="queue[0]">
+                            <div class="row">
+                                <div class="col-6">
+                                    <h3 class="float-right">{{ queue[0].track }}</h3><br>
+                                    <h3 class="float-right">{{ queue[0].artist }}</h3>
+                                </div>
+                                <div class="col-2">
+                                    <img v-if="playing" id="pauseButton" src="/img/pause.png" v-on:click="pause"/>
+                                    <img v-else id="playButton" src="/img/play.png" v-on:click="play"/>
+                                </div>
+                            </div>
+                            <hr>
                         </div>
-                        <div class="col-9 float-right">
-                            Track: {{ song.track }} <br>
-                            Artist: {{ song.artist }}
+                        <input v-model="searchInput" v-bind:onchange="search(searchInput)" type="text"
+                               class="form-control"
+                               placeholder="Search for music to queue" aria-label="Music search">
+                        <div v-show="!showQueue" v-for="result in searchResult">
+                            <hr>
+                            <div class="row">
+                                <div class="col-1">
+                                    <img class="albumCoverSearch" v-bind:src="result.cover"/>
+                                </div>
+                                <div class="col-10">
+                                    Track: {{ result.track }} <br>
+                                    Artist: {{ result.artist }}
+                                </div>
+                                <div class="col-1">
+                                    <button class="btn btn-outline-dark btn-sm float-right" id="add"
+                                            v-on:click="queueSong(result)">Add to queue
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col text-right">
-                            <button class="btn btn-sm" id="like" v-on:click="">Like</button>
-                            <button class="btn btn-sm" id="dislike" v-on:click="">Dislike</button>
+                        <div v-show="showQueue" v-for="song in queue" v-if="song !== queue[0]">
+                            <hr>
+                            <div class="row">
+                                <div class="col-1">
+                                    <img class="albumCoverSearch" v-bind:src="song.cover"/>
+                                </div>
+                                <div class="col-9 float-right">
+                                    Track: {{ song.track }} <br>
+                                    Artist: {{ song.artist }}
+                                </div>
+                                <div class="col text-right">
+                                    <button class="btn btn-outline-dark btn-sm" id="like" v-on:click="">+</button>
+                                    <button class="btn btn-outline-dark btn-sm" id="dislike" v-on:click="">-</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
