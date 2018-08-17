@@ -16,6 +16,8 @@ var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
 var path = require('path');
 
+var client_id = ''; // Your client id
+var client_secret = ''; // Your client secret
 var redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri
 
 /**
@@ -48,7 +50,7 @@ app.get('/login', function (req, res) {
     res.cookie(stateKey, state);
 
     // your application requests authorization
-    var scope = 'user-read-private user-read-email user-modify-playback-state';
+    var scope = 'user-read-private user-read-email user-read-playback-state user-modify-playback-state playlist-modify-public playlist-modify-private';
     res.redirect('https://accounts.spotify.com/authorize?' +
         querystring.stringify({
             response_type: 'code',
@@ -148,9 +150,29 @@ app.get('/refresh_token', function (req, res) {
 var server = app.listen(8888);
 var io = require('socket.io').listen(server);
 
+function Data() {
+    this.queue = [];
+}
+
+Data.prototype.getQueue = function () {
+    return this.queue;
+};
+
+Data.prototype.setQueue = function (queue) {
+    this.queue = queue;
+};
+
+var data = new Data();
+
 io.sockets.on('connection', function (socket) {
 
-    socket.on('queueTrack', function (track) {
-        io.emit('queueTrack', track);
-    })
+    socket.emit('initialize', {
+        queue: data.getQueue()
+    });
+
+    socket.on('songAdded', function (queue) {
+        data.setQueue(queue);
+        io.emit('songAdded', queue);
+    });
+
 });

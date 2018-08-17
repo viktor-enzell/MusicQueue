@@ -1,24 +1,32 @@
-/* Space out content a bit */
-body {
+html, body {
+    margin: 0;
+    height: 100%;
+}
+
+.background {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    color: #dcdcdc;
+    height: 100%;
+}
+
+.transparent {
+    height: 100%;
     padding-top: 10%;
     padding-bottom: 1.5rem;
-    background-color: #26A96C;
+    background: rgba(0, 0, 0, 0.91);
 }
 
-a {
-    color: #F4F9E9;
+#bgRight {
+    position: fixed;
+    top: 0;
+    right: 50%;
+    z-index: -1;
+    height: 100%;
 }
 
-a:hover {
-    color: #284b63;
-    text-decoration: none;
-}
-
-h3 {
-    color: #F4F9E9;
-}
-
-#bg {
+#bgLeft {
     position: fixed;
     top: 0;
     left: 50%;
@@ -26,49 +34,53 @@ h3 {
     height: 100%;
 }
 
+/* Text */
+h1 {
+}
+
+h2 {
+}
+
+h3 {
+}
+
+a {
+}
+
+a:hover {
+}
+
+/* Buttons
 .btn {
     background-color: #256B51;
     border-color: #256B51;
-    color: white;
+    color: #ffffff;
 }
 
 .btn:hover {
-    background-color: #2E8665;
     border-color: #2E8665;
 }
 
 .btn:active {
-    background-color: #2E8665;
     border-color: #2E8665;
     box-shadow: none;
+}*/
+
+#playButton {
+    width: 100%;
 }
 
-/* Everything but the jumbotron gets side spacing for mobile first views */
-.header,
-.marketing,
-.footer {
-    padding-right: 1rem;
-    padding-left: 1rem;
+#pauseButton {
+    width: 100%;
 }
 
-/* Custom page header */
-.header {
-    padding-bottom: 1rem;
-    border-bottom: .05rem solid #e5e5e5;
+/* Images */
+.albumCoverSearch {
+    height: 40px;
 }
 
-/* Make the masthead heading the same height as the navigation */
-.header h3 {
-    margin-top: 0;
-    margin-bottom: 0;
-    line-height: 3rem;
-}
-
-/* Custom page footer */
-.footer {
-    padding-top: 1.5rem;
-    color: #777;
-    border-top: .05rem solid #e5e5e5;
+.container {
+    /*background: #5A7D7C;*/
 }
 
 /* Customize container */
@@ -77,60 +89,7 @@ h3 {
         max-width: 46rem;
     }
 }
+
 .container-narrow > hr {
     margin: 2rem 0;
-}
-
-/* Main marketing message and sign up button */
-.jumbotron {
-    text-align: center;
-    border-bottom: .05rem solid #e5e5e5;
-}
-.jumbotron .btn {
-    padding: .75rem 1.5rem;
-    font-size: 1.5rem;
-}
-
-/* Supporting marketing content */
-.marketing {
-    margin: 3rem 0;
-}
-.marketing p + h4 {
-    margin-top: 1.5rem;
-}
-
-/*#login, #loggedin {
-    display: none;
-}*/
-
-.text-overflow {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    width: 500px;
-}
-
-/* Responsive: Portrait tablets and up */
-@media screen and (min-width: 48em) {
-    /* Remove the padding we set earlier */
-    .header,
-    .marketing,
-    .footer {
-        padding-right: 0;
-        padding-left: 0;
-    }
-
-    /* Space out the masthead */
-    .header {
-        margin-bottom: 2rem;
-    }
-
-    /* Remove the bottom border on the jumbotron for visual effect */
-    .jumbotron {
-        border-bottom: 0;
-    }
-}
-
-.albumCoverSearch {
-    height: 40px;
 }

@@ -2,7 +2,7 @@
 var socket = io();
 
 var vm = new Vue({
-    el: '.container',
+    el: '.background',
     data: {
         params: {},
         user_id: '',
@@ -11,16 +11,16 @@ var vm = new Vue({
         refresh_token: '',
         error: '',
         login: true,
+        contribute: false,
         showQueue: true,
-        showUserInfo: false,
         playing: false,
         songHasStarted: false,
+        backgroundImage: '/img/bgTransparent.png',
 
         responses: {},
         name: '',
         email: '',
 
-        currentSong: '',
         searchInput: '',
         oldSearchInput: '',
         searchResult: [],
@@ -38,6 +38,14 @@ var vm = new Vue({
 
         this.authenticate();
         this.newPlaylist();
+
+        socket.on('initialize', function (data) {
+            this.queue = data.queue;
+        }.bind(this));
+
+        socket.on('songAdded', function (queue) {
+            this.queue = queue;
+        }.bind(this));
     },
     methods: {
         getParams: function () {
@@ -55,6 +63,7 @@ var vm = new Vue({
             } else {
                 if (this.access_token) {
                     this.login = false;
+                    this.backgroundImage = '/img/1bw.jpg';
                     $.ajax({
                         url: 'https://api.spotify.com/v1/me',
                         headers: {
@@ -63,7 +72,7 @@ var vm = new Vue({
                         success: function (response) {
                             Vue.set(vm.responses, 'user', response);
                             vm.displayUser();
-                            // vm.newQueue(); ONLY IF PLAYLIST METHOD IS USED
+                            vm.newPlaylist(); // ONLY IF PLAYLIST METHOD IS USED
                         }
                     });
                 } else {
@@ -81,6 +90,13 @@ var vm = new Vue({
                 Vue.set(vm.responses, 'refreshToken', data.access_token);
                 vm.displayNewToken();
             });
+        },
+        join: function () {
+            this.contribute = true;
+            this.backgroundImage = '/img/1bw.jpg';
+        },
+        notifyOthers: function () {
+            socket.emit('songAdded', this.queue);
         },
         newPlaylist: function () {
             $.ajax({
@@ -105,7 +121,7 @@ var vm = new Vue({
                     'Authorization': 'Bearer ' + this.access_token,
                     'Content-Type': 'application/json'
                 },
-                data: "{\"uris\": [\"spotify:track:4iV5W9uYEdYUVa79Axb7Rh\",\"spotify:track:1301WleyT98MSxVHPZCA6M\"]}",
+                data: "{\"uris\": [\"spotify:track:" + song.id + "\"]}",
                 success: function (response) {
                 }
             });
@@ -123,7 +139,7 @@ var vm = new Vue({
                     }
                 });
             } else {
-                this.playNext();
+                this.playQueue();
             }
             this.playing = true;
         },
@@ -139,10 +155,7 @@ var vm = new Vue({
             });
             this.playing = false;
         },
-        playNext: function () {
-            var length = this.queue.length;
-            var i;
-            var queueString = "\"spotify:track:" + this.currentSong.id + "\"," + "\"spotify:track:" + this.queue[0].id + "\"";
+        playQueue: function () {
             $.ajax({
                 url: 'https://api.spotify.com/v1/me/player/play',
                 method: 'PUT',
@@ -150,7 +163,7 @@ var vm = new Vue({
                     'Authorization': 'Bearer ' + this.access_token,
                     'Content-Type': 'application/json'
                 },
-                data: "{\"uris\": [" + queueString + "], \"offset\": {\"position\": 0}}",
+                data: "{\"context_uri\":\"spotify:user:" + this.user_id + ":playlist:" + this.queue_id + "\",\"offset\":{\"position\":0}}",
             });
         },
         getPlayback: function () {
@@ -182,14 +195,12 @@ var vm = new Vue({
             });
         },
         queueSong: function (song) {
-            if (this.queue.length === 0 && this.currentSong === '') {
-                this.currentSong = song;
-            } else {
-                this.queue.push(song);
-            }
-            // this.addToQueue(song); ONLY IF PLAYLIST METHOD IS USED
+            this.queue.push(song);
+            this.backgroundImage = this.queue[0].cover;
+            this.addToPlaylist(song);
             this.searchInput = "";
             this.showQueue = true;
+            this.notifyOthers();
         },
         displayUser: function () {
             this.name = this.responses.user.display_name;
@@ -219,7 +230,7 @@ var vm = new Vue({
             this.queue_id = this.responses.playlist.id;
         },
         finished: function () {
-            //if (this.responses.player.progress_ms >= this.responses.player.item.)
+            //if (this.responses.player.progress_ms >= this.responses.player.item.)face
         },
         isPlaying: function () {
             return this.responses.player.is_playing;
