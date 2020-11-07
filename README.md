@@ -1,4 +1,4 @@
-# MusicQueue
+# Music Queue
 A web app for people to queue their favourite music while at an event or a party. MusicQueue uses the Spotify Web API.
 
 ### Dependencies
